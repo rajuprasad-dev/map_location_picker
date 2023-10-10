@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import "package:google_maps_webapi/geocoding.dart";
 import 'package:google_maps_webapi/places.dart';
 import 'package:http/http.dart';
+import 'package:map_location_picker/assets/themes/dark_mode.dart';
 
 import 'autocomplete_view.dart';
 import 'logger.dart';
@@ -185,6 +186,8 @@ class MapLocationPicker extends StatefulWidget {
   /// hide bottom card (default: false)
   final bool hideBottomCard;
 
+  final Brightness? theme;
+
   const MapLocationPicker({
     Key? key,
     this.desiredAccuracy = LocationAccuracy.high,
@@ -250,6 +253,7 @@ class MapLocationPicker extends StatefulWidget {
     this.hideMapTypeButton = false,
     this.hideBottomCard = false,
     this.onDecodeAddress,
+    this.theme,
   }) : super(key: key);
 
   @override
@@ -328,8 +332,13 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
               );
               setState(() {});
             },
-            onMapCreated: (GoogleMapController controller) =>
-                _controller.complete(controller),
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+
+              if (widget.theme == Brightness.dark && darkMapStyle.isNotEmpty) {
+                controller.setMapStyle(darkMapStyle);
+              }
+            },
             markers: {
               Marker(
                 markerId: const MarkerId('one'),
@@ -380,6 +389,26 @@ class _MapLocationPickerState extends State<MapLocationPicker> {
                 topCardColor: widget.topCardColor,
                 topCardMargin: widget.topCardMargin,
                 topCardShape: widget.topCardShape,
+                // decoration: InputDecoration(
+                //   border: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                //   enabledBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                //   focusedBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                //   disabledBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                //   errorBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                //   focusedErrorBorder: OutlineInputBorder(
+                //     borderRadius: BorderRadius.circular(12.0),
+                //   ),
+                // ),
                 types: widget.types,
                 onGetDetailsByPlaceId: (placesDetails) async {
                   if (placesDetails == null) {
