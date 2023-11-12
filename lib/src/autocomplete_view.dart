@@ -355,6 +355,10 @@ class PlacesAutocomplete extends StatelessWidget {
   final bool right;
   final bool top;
 
+  /// Minimum number of characters to trigger suggestions
+  /// Defaults to 0
+  final int minCharsForSuggestions;
+
   const PlacesAutocomplete({
     Key? key,
     required this.apiKey,
@@ -427,6 +431,7 @@ class PlacesAutocomplete extends StatelessWidget {
     this.maintainBottomViewPadding = false,
     this.right = true,
     this.top = true,
+    this.minCharsForSuggestions = 0,
   }) : super(key: key);
 
   /// Get [AutoCompleteState] for [AutoCompleteTextField]
@@ -441,8 +446,8 @@ class PlacesAutocomplete extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     /// Get text controller from [searchController] or create new instance of [TextEditingController] if [searchController] is null or empty
-    final textController = useState<TextEditingController>(
-        searchController ?? TextEditingController());
+    final textController =
+        useState<TextEditingController>(searchController ?? TextEditingController());
     return SafeArea(
       bottom: bottom,
       left: left,
@@ -461,6 +466,7 @@ class PlacesAutocomplete extends StatelessWidget {
           title: ClipRRect(
             borderRadius: borderRadius,
             child: FormBuilderTypeAhead<Prediction>(
+              minCharsForSuggestions: minCharsForSuggestions,
               decoration: decoration ??
                   InputDecoration(
                     hintText: searchHintText,
@@ -507,8 +513,8 @@ class PlacesAutocomplete extends StatelessWidget {
                 return predictions;
               },
               onSuggestionSelected: (value) async {
-                textController.value.selection = TextSelection.collapsed(
-                    offset: textController.value.text.length);
+                textController.value.selection =
+                    TextSelection.collapsed(offset: textController.value.text.length);
                 _getDetailsByPlaceId(value.placeId ?? "", context);
                 onSuggestionSelected?.call(value);
               },
@@ -530,8 +536,7 @@ class PlacesAutocomplete extends StatelessWidget {
               hideOnError: hideOnError,
               hideOnLoading: hideOnLoading,
               keepSuggestionsOnLoading: keepSuggestionsOnLoading,
-              keepSuggestionsOnSuggestionSelected:
-                  keepSuggestionsOnSuggestionSelected,
+              keepSuggestionsOnSuggestionSelected: keepSuggestionsOnSuggestionSelected,
               loadingBuilder: loadingBuilder,
               noItemsFoundBuilder: noItemsFoundBuilder,
               suggestionsBoxController: suggestionsBoxController,
@@ -580,8 +585,7 @@ class PlacesAutocomplete extends StatelessWidget {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(response.errorMessage ??
-                  "Address not found, something went wrong!"),
+              content: Text(response.errorMessage ?? "Address not found, something went wrong!"),
             ),
           );
         }
